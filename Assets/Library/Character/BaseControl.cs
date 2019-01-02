@@ -69,7 +69,7 @@ namespace Character
 				var objHit = obj.hit;
 
 				if(objHit == null) continue;
-				for(var j=1; j<nums; j++)
+				for(var j=i+1; j<nums; j++)
 				{
 					var target = characterList[i];
 					var targetHit = target.hit;

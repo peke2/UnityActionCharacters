@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : Character.CharacterObject {
+public class Player : CharacterBase {
 
-	GameObject player;
+	GameObject chobj;
 
 	// Use this for initialization
 	void Start () {
@@ -12,11 +12,15 @@ public class Player : Character.CharacterObject {
 		ctrl.addObject(this);
 
 		var obj = Resources.Load<GameObject>("Player");
-		player = GameObject.Instantiate<GameObject>(obj);
-		player.name = "PlayerObject";
-		player.transform.SetParent(gameObject.transform, false);
+		chobj = GameObject.Instantiate<GameObject>(obj);
+		chobj.name = "PlayerObject";
+		chobj.transform.SetParent(gameObject.transform, false);
+
+		hit = new Character.Hit();
+		hit.setSize(new Vector2(1f,1f));
+		hit.setOffset(new Vector2(-0.5f,0.5f));
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		
@@ -26,7 +30,7 @@ public class Player : Character.CharacterObject {
 	float angleRad = 0;
 	public override void update()
 	{
-		angleRad += 10 * Mathf.Deg2Rad;
+		angleRad += 3 * Mathf.Deg2Rad;
 		float r = 2;
 
 		var x = Mathf.Cos(angleRad) * r;
@@ -34,7 +38,7 @@ public class Player : Character.CharacterObject {
 
 		position = new Vector2(x, y);
 
-		if(++counter > 120)
+		if(++counter > 300)
 		{
 			isRemoved = true;
 		}
@@ -42,6 +46,11 @@ public class Player : Character.CharacterObject {
 
 	public override void updateGraph()
 	{
-		player.transform.position = position;
+		chobj.transform.position = position;
+	}
+
+	public override void onHit(Character.ICore target)
+	{
+
 	}
 }

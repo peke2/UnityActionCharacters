@@ -32,22 +32,23 @@ namespace Character
 
 		public bool collides(Vector2 pos, Vector2 targetPos, Hit targetHit)
 		{
+			var rev = new Vector2(1f,-1f);
 			var lt = pos + offset;
-			var rb = lt + size;
+			var rb = lt + size * rev;
 
 			var targetLt = targetPos + targetHit.getOffset();
-			var targetRb = targetLt + targetHit.getSize();
+			var targetRb = targetLt + targetHit.getSize() * rev;
 
 			var rect = size + targetHit.getSize();
 			var areaLt = Vector2.zero;
 			var areaRb = Vector2.zero;
 
 			areaLt.x = (lt.x < targetLt.x) ? lt.x : targetLt.x;
-			areaLt.y = (lt.y < targetLt.y) ? lt.y : targetLt.y;
+			areaLt.y = (lt.y > targetLt.y) ? lt.y : targetLt.y;
 			areaRb.x = (rb.x > targetRb.x) ? rb.x : targetRb.x;
-			areaRb.y = (rb.y > targetRb.y) ? rb.y : targetRb.y;
+			areaRb.y = (rb.y < targetRb.y) ? rb.y : targetRb.y;
 
-			if((areaRb.x - areaLt.x < rect.x) && (areaRb.y - areaLt.y < rect.y))
+			if((areaRb.x - areaLt.x < rect.x) && (areaLt.y - areaRb.y < rect.y))
 			{
 				return true;
 			}
