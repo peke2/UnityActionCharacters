@@ -71,7 +71,7 @@ namespace Character
 				if(objHit == null) continue;
 				for(var j=i+1; j<nums; j++)
 				{
-					var target = characterList[i];
+					var target = characterList[j];
 					var targetHit = target.hit;
 
 					if(targetHit == null) continue;
@@ -87,7 +87,9 @@ namespace Character
 			//	判定中に随時処理を行わず、すべての判定が終了したらまとめて対応
 			foreach(var t in list)
 			{
+				//	お互いにイベントを送る
 				(t.Item1).onHit(t.Item2);
+				(t.Item2).onHit(t.Item1);
 			}
 		}
 

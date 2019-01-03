@@ -21,6 +21,9 @@ public class Enemy : CharacterBase
 		hit = new Character.Hit();
 		hit.setSize(new Vector2(1f,1f));
 		hit.setOffset(new Vector2(-0.5f,0.5f));
+
+		type = CharacterBase.Type.Enemy;
+
 	}
 
 	// Update is called once per frame
@@ -55,10 +58,10 @@ public class Enemy : CharacterBase
 	public override void onHit(Character.ICore target)
 	{
 		CharacterBase cbase = (CharacterBase)target;
-		Debug.Log(cbase.type);
 		if(cbase.type == CharacterBase.Type.Player)
 		{
-			//isRemoved = true;
+			//Debug.Log(cbase.type);
+			isRemoved = true;
 		}
 	}
 

@@ -19,6 +19,8 @@ public class Player : CharacterBase {
 		hit = new Character.Hit();
 		hit.setSize(new Vector2(1f,1f));
 		hit.setOffset(new Vector2(-0.5f,0.5f));
+
+		type = CharacterBase.Type.Player;
 	}
 
 	// Update is called once per frame
