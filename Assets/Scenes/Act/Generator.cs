@@ -11,14 +11,14 @@ public class Generator : MonoBehaviour {
 		obj.AddComponent<Player>();
 		obj.transform.SetParent(gameObject.transform,false);
 
-		Enemy enemy;
-		for(int i = 0; i < 10; i++)
-		{
-			obj = new GameObject("Enemy");
-			enemy = obj.AddComponent<Enemy>();
-			obj.transform.SetParent(gameObject.transform,false);
-			enemy.position = new Vector2(Random.Range(-5,5),Random.Range(-5,5));
-		}
+		//Enemy enemy;
+		//for(int i = 0; i < 10; i++)
+		//{
+		//	obj = new GameObject("Enemy");
+		//	enemy = obj.AddComponent<Enemy>();
+		//	obj.transform.SetParent(gameObject.transform,false);
+		//	enemy.position = new Vector2(Random.Range(-5,5),Random.Range(-5,5));
+		//}
 	}
 
 	// Update is called once per frame
