@@ -27,6 +27,12 @@ namespace Stage
 		public int getChip(int x, int y)
 		{
 			if(chipInfo == null) return -1;
+
+			if((x < 0 || x >= width) || (y < 0 || y >= height))
+			{
+				return -1;
+			}
+
 			//	パターンの配置は配列の順番で上から下に並ぶので、Y座標指定を反転
 			return chipInfo[height-y-1][x];
 		}

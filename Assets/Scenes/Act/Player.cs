@@ -27,13 +27,51 @@ public class Player : CharacterBase {
 	}
 
 
+	int jumpCount = 0;
+	float jump = 0;
 	public override void update()
 	{
 		var pos = position;
 		if(!isGround())
 		{
-			pos.y -= 0.1f;
+			if(jump == 0)
+			{
+				pos.y -= 0.1f;
+			}
 		}
+		else
+		{
+			float h = Input.GetAxis("Horizontal");
+			if(h >= 0.2f)
+			{
+				pos.x += 0.2f;
+			}
+			else if(h <= -0.2f)
+			{
+				pos.x -= 0.2f;
+			}
+
+			if(Input.GetButtonDown("Jump") && jump==0)
+			{
+				jump = 0.4f;
+				jumpCount = 4;
+			}
+		}
+
+		if(jumpCount > 0)
+		{
+			jumpCount--;
+		}
+		else
+		{
+			jump = jump / 2;
+			if(jump < 0.1f)
+			{
+				jump = 0;
+			}
+		}
+		pos.y += jump;
+
 		position = pos;
 	}
 
