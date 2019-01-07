@@ -32,31 +32,49 @@ public class Player : CharacterBase {
 	public override void update()
 	{
 		var pos = position;
+		float rate = 1.0f;
+
 		if(!isGround())
 		{
 			if(jump == 0)
 			{
-				pos.y -= 0.1f;
+				pos.y -= 0.2f;
 			}
+			rate = 0.4f;
 		}
 		else
 		{
-			float h = Input.GetAxis("Horizontal");
-			if(h >= 0.2f)
-			{
-				pos.x += 0.2f;
-			}
-			else if(h <= -0.2f)
-			{
-				pos.x -= 0.2f;
-			}
-
-			if(Input.GetButtonDown("Jump") && jump==0)
+			if(Input.GetButtonDown("Jump") && jump == 0)
 			{
 				jump = 0.4f;
 				jumpCount = 4;
 			}
 		}
+
+		float h = Input.GetAxis("Horizontal");
+		float move = 0;
+		int dir = 0;
+
+		if(h >= 0.2f)
+		{
+			move = 0.2f;
+			dir = 1;
+		}
+		else if(h <= -0.2f)
+		{
+			move = -0.2f;
+			dir = -1;
+		}
+
+		if(dir!=0)
+		{
+			if(isWall(dir))
+			{
+				move = 0;
+			}
+		}
+		pos.x += move * rate;
+
 
 		if(jumpCount > 0)
 		{
@@ -113,6 +131,31 @@ public class Player : CharacterBase {
 		}
 		return false;
 	}
+
+	bool isWall(int sideDir)
+	{
+		var x = Mathf.Round(position.x / 0.5f) * 0.5f;
+		var y = Mathf.Round(position.y / 0.5f) * 0.5f;
+
+		var obj = GameObject.Find("Stage");
+		if(obj == null)
+		{
+			return false;
+		}
+		var stageObj = obj.GetComponent<Stage.StageObject>();
+
+		if(stageObj != null)
+		{
+			var chip = stageObj.stage.getChip((int)((x + 0.5f*sideDir) / 0.5f), (int)(y / 0.5f));
+
+			if(chip == 1)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 
 
 	void drawRectLine(float x, float y)
