@@ -34,7 +34,7 @@ public class Player : CharacterBase {
 		var pos = position;
 		float rate = 1.0f;
 
-		if(!isGround())
+		if(!isGround(position))
 		{
 			if(jump == 0)
 			{
@@ -47,7 +47,7 @@ public class Player : CharacterBase {
 			if(Input.GetButtonDown("Jump") && jump == 0)
 			{
 				jump = 0.4f;
-				jumpCount = 4;
+				jumpCount = 8;
 			}
 		}
 
@@ -68,12 +68,14 @@ public class Player : CharacterBase {
 
 		if(dir!=0)
 		{
-			if(isWall(dir))
+			pos.x += move * rate;
+
+			if(isWall(pos, dir, 0))
 			{
-				move = 0;
+				//move = 0;
+				pos.x -= move * rate;
 			}
 		}
-		pos.x += move * rate;
 
 
 		if(jumpCount > 0)
@@ -88,7 +90,14 @@ public class Player : CharacterBase {
 				jump = 0;
 			}
 		}
+
 		pos.y += jump;
+		if(isCeiling(pos))
+		{
+			pos.y -= jump;
+			jump = 0;
+			jumpCount = 0;
+		}
 
 		position = pos;
 	}
@@ -103,10 +112,20 @@ public class Player : CharacterBase {
 
 	}
 
-	bool isGround()
+	bool isCeiling(Vector2 pos)
 	{
-		var x = Mathf.Round(position.x / 0.5f) * 0.5f;
-		var y = Mathf.Round(position.y / 0.5f) * 0.5f;
+		return isWall(pos, 0, 1);
+	}
+
+	bool isGround(Vector2 pos)
+	{
+		return isWall(pos, 0, -1);
+	}
+
+	bool isWall(Vector2 pos, int hdir, int vdir)
+	{
+		var x = Mathf.Round(pos.x / 0.5f) * 0.5f;
+		var y = Mathf.Round(pos.y / 0.5f) * 0.5f;
 
 		var obj = GameObject.Find("Stage");
 		if(obj == null)
@@ -117,36 +136,7 @@ public class Player : CharacterBase {
 
 		if(stageObj != null)
 		{
-			var chip = stageObj.stage.getChip((int)(x/0.5f), (int)((y - 0.5f)/0.5f));
-
-			drawRectLine(position.x, position.y-0.5f);
-
-			if(chip == 1)
-			{
-				return true;
-			}
-
-
-			stageObj.markChip(0, 0);
-		}
-		return false;
-	}
-
-	bool isWall(int sideDir)
-	{
-		var x = Mathf.Round(position.x / 0.5f) * 0.5f;
-		var y = Mathf.Round(position.y / 0.5f) * 0.5f;
-
-		var obj = GameObject.Find("Stage");
-		if(obj == null)
-		{
-			return false;
-		}
-		var stageObj = obj.GetComponent<Stage.StageObject>();
-
-		if(stageObj != null)
-		{
-			var chip = stageObj.stage.getChip((int)((x + 0.5f*sideDir) / 0.5f), (int)(y / 0.5f));
+			var chip = stageObj.stage.getChip((int)((x + 0.5f*hdir) / 0.5f), (int)((y + 0.5f*vdir) / 0.5f));
 
 			if(chip == 1)
 			{
@@ -155,8 +145,6 @@ public class Player : CharacterBase {
 		}
 		return false;
 	}
-
-
 
 	void drawRectLine(float x, float y)
 	{
