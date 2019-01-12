@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using UnityEngine.Tilemaps;
+
 namespace Stage
 {
 	public class StageObject : MonoBehaviour
@@ -33,11 +35,22 @@ namespace Stage
 
 		GameObject wall;
 
+		Tilemap tileMap;
+
 		// Use this for initialization
 		void Start()
 		{
+			var tileObj = GameObject.Find("Tilemap");
+			tileMap = tileObj.GetComponent<Tilemap>();
+		/*	var tile1 = tileMap.GetTile(new Vector3Int(0, 0, 0));
+			var tile2 = tileMap.GetTile(new Vector3Int(0, 1, 0));
+			var tile3 = tileMap.GetTile(new Vector3Int(1, 1, 0));
+			var tile4 = tileMap.GetTile(new Vector3Int(1, 0, 0));
+			Debug.Log("");*/
+
 			stage = new Stage();
-			stage.initChips(30, 20, chips);
+			//stage.initChips(30, 20, chips);
+			stage.tileMap = tileMap;
 
 			wall = Resources.Load<GameObject>("Wall");
 			float size = 0.5f;
@@ -56,7 +69,7 @@ namespace Stage
 		// Update is called once per frame
 		void Update()
 		{
-			var center = stage.getCenter();
+		/*	var center = stage.getCenter();
 			var cameraObj = GameObject.Find("Main Camera");
 			if(cameraObj)
 			{
@@ -65,7 +78,7 @@ namespace Stage
 				camera.transform.position = new Vector3(center.x, center.y, pos.z);
 			}
 
-			drawMarks();
+			drawMarks();*/
 		}
 
 
