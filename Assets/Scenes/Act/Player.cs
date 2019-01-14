@@ -18,11 +18,11 @@ public class Player : CharacterBase {
 		chobj = GameObject.Instantiate<GameObject>(obj);
 		chobj.name = "PlayerObject";
 		chobj.transform.SetParent(gameObject.transform, false);
-		position = new Vector2(2.5f,8);
+		position = new Vector2(24,128);
 
 		hit = new Character.Hit();
-		hit.setSize(new Vector2(1f,1f));
-		hit.setOffset(new Vector2(-0.5f,0.5f));
+		hit.setSize(new Vector2(16,16));
+		hit.setOffset(new Vector2(-8,8));
 
 		type = CharacterBase.Type.Player;
 	}
@@ -35,19 +35,24 @@ public class Player : CharacterBase {
 		var pos = position;
 		float rate = 1.0f;
 
-		if(!isGround(position))
+		float fallMove = -4;
+		Vector2 backVector = Vector2.zero;
+
+		if(!isGround(position, new Vector2(0, fallMove), ref backVector))
 		{
 			if(jump == 0)
 			{
-				pos.y -= 0.2f;
+				pos.y += fallMove;
 			}
 			rate = 0.4f;
 		}
 		else
 		{
+			pos.y += fallMove + backVector.y;
+
 			if(Input.GetButtonDown("Jump") && jump == 0)
 			{
-				jump = 0.4f;
+				jump = 4;
 				jumpCount = 8;
 			}
 		}
@@ -58,23 +63,24 @@ public class Player : CharacterBase {
 
 		if(h >= 0.2f)
 		{
-			move = 0.2f;
+			move = 2;
 			dir = 1;
 		}
 		else if(h <= -0.2f)
 		{
-			move = -0.2f;
+			move = -2;
 			dir = -1;
 		}
 
 		if(dir!=0)
 		{
-			pos.x += move * rate;
-
-			if(isWall(pos, dir, 0))
+			if(!isWall(pos, new Vector2(move * rate, 0), ref backVector))
 			{
-				//move = 0;
-				pos.x -= move * rate;
+				pos.x += move * rate;
+			}
+			else
+			{
+				pos.x += move * rate + backVector.x;
 			}
 		}
 
@@ -92,12 +98,16 @@ public class Player : CharacterBase {
 			}
 		}
 
-		pos.y += jump;
-		if(isCeiling(pos))
+		backVector = Vector2.zero;
+		if(isCeiling(pos, new Vector2(0, jump), ref backVector))
 		{
-			pos.y -= jump;
+			pos.y += jump + backVector.y;
 			jump = 0;
 			jumpCount = 0;
+		}
+		else
+		{
+			pos.y += jump;
 		}
 
 		position = pos;
@@ -113,18 +123,32 @@ public class Player : CharacterBase {
 
 	}
 
-	bool isCeiling(Vector2 pos)
+	bool isCeiling(Vector2 pos, Vector2 offset, ref Vector2 backVector)
 	{
-		return isWall(pos, 0, 1);
+		return isWall(pos, offset, ref backVector);
 	}
 
-	bool isGround(Vector2 pos)
+	bool isGround(Vector2 pos, Vector2 offset, ref Vector2 backVector)
 	{
-		return isWall(pos, 0, -1);
+		return isWall(pos, offset, ref backVector);
 	}
 
-	bool isWall(Vector2 pos, int hdir, int vdir)
+
+	Vector2 calcSnapVectorFloor(float x, float y, float snapx, float snapy)
 	{
+		var vec = new Vector2(Mathf.Floor(x/snapx)*snapx, Mathf.Floor(y/snapy)*snapy);
+		return vec;
+	}
+
+	Vector2 calcSnapVectorCeil(float x, float y, float snapx, float snapy)
+	{
+		var vec = new Vector2(Mathf.Ceil(x / snapx) * snapx, Mathf.Ceil(y / snapy) * snapy);
+		return vec;
+	}
+
+	bool isWall(Vector2 pos, Vector2 offset, ref Vector2 backVector)
+	{
+#if false
 		var x = Mathf.Round(pos.x / 0.5f) * 0.5f;
 		var y = Mathf.Round(pos.y / 0.5f) * 0.5f;
 
@@ -145,6 +169,69 @@ public class Player : CharacterBase {
 			}
 		}
 		return false;
+#else
+		backVector = Vector2.zero;
+
+		var obj = GameObject.Find("Stage");
+		if(obj == null)
+		{
+			return false;
+		}
+
+		var stageObj = obj.GetComponent<Stage.StageObject>();
+
+		if(stageObj == null)
+		{
+			return false;
+		}
+
+		//	座標とサイズから左上と右下の座標を取得
+		//	切り捨てでブロックサイズ(0.5*0.5)にマッピング
+		var size = new Vector2(16, 16);
+		var blockSize = new Vector2(8, 8);
+		//var lt = calcSnapVectorFloor(pos.x - size.x / 2, pos.y + size.y / 2, 0.5f, 0.5f);
+		//var rb = calcSnapVectorCeil(pos.x + size.x / 2, pos.y - size.y / 2, 0.5f, 0.5f);
+		var lx = pos.x + offset.x - size.x / 2;
+		var ly = pos.y + offset.y + size.y / 2;
+		var rx = pos.x + offset.x + size.x / 2;
+		var ry = pos.y + offset.y - size.y / 2;
+		var snapx = 8;
+		var snapy = 8;
+		var lt = new Vector2(Mathf.Floor(lx / snapx) * snapx, Mathf.Ceil(ly / snapy) * snapy);
+		var rb = new Vector2(Mathf.Ceil(rx / snapx) * snapx, Mathf.Floor(ry / snapy) * snapy);
+
+		//	判定の範囲から判定対象のブロックを求める
+		int x0 = (int)(lt.x / snapx);
+		int x1 = (int)(rb.x / snapx);
+		int y0 = (int)(rb.y / snapy);
+		int y1 = (int)(lt.y / snapy);
+
+		for(var y = y0; y < y1; y++)
+		{
+			for(var x = x0; x < x1; x++)
+			{
+				//var chip = stageObj.stage.getChip((int)((x + 0.5f * hdir) / 0.5f), (int)((y + 0.5f * vdir) / 0.5f));
+				var chip = stageObj.stage.getChip(x, y);
+
+				if(chip == 1)
+				{
+					var block = new Vector2(x * 8, y* 8) + blockSize / 2f;
+					var dist = block - (pos + offset);
+					var len = (blockSize + size) / 2;
+
+					dist = new Vector2(Mathf.Abs(dist.x), Mathf.Abs(dist.y));
+
+					var back = len - dist;
+
+					backVector = back * (-offset.normalized);
+
+					return true;
+				}
+			}
+		}
+
+		return false;
+#endif
 	}
 
 	void drawRectLine(float x, float y)
