@@ -9,6 +9,9 @@ public class Player : CharacterBase {
 
 	System.Action stateProc;
 
+	const float JUMP_PITCH = 4;
+	const int JUMP_COUNT = 8;
+
 	// Use this for initialization
 	void Start () {
 		var ctrl = Character.ControlObject.getControl();
@@ -52,8 +55,8 @@ public class Player : CharacterBase {
 
 			if(Input.GetButtonDown("Jump") && jump == 0)
 			{
-				jump = 4;
-				jumpCount = 8;
+				jump = JUMP_PITCH;
+				jumpCount = JUMP_COUNT;
 			}
 		}
 
@@ -123,17 +126,19 @@ public class Player : CharacterBase {
 
 	}
 
+	//	天井判定
 	bool isCeiling(Vector2 pos, Vector2 offset, ref Vector2 backVector)
 	{
 		return isWall(pos, offset, ref backVector);
 	}
 
+	//	地面判定
 	bool isGround(Vector2 pos, Vector2 offset, ref Vector2 backVector)
 	{
 		return isWall(pos, offset, ref backVector);
 	}
 
-
+	/*
 	Vector2 calcSnapVectorFloor(float x, float y, float snapx, float snapy)
 	{
 		var vec = new Vector2(Mathf.Floor(x/snapx)*snapx, Mathf.Floor(y/snapy)*snapy);
@@ -144,32 +149,10 @@ public class Player : CharacterBase {
 	{
 		var vec = new Vector2(Mathf.Ceil(x / snapx) * snapx, Mathf.Ceil(y / snapy) * snapy);
 		return vec;
-	}
+	}*/
 
 	bool isWall(Vector2 pos, Vector2 offset, ref Vector2 backVector)
 	{
-#if false
-		var x = Mathf.Round(pos.x / 0.5f) * 0.5f;
-		var y = Mathf.Round(pos.y / 0.5f) * 0.5f;
-
-		var obj = GameObject.Find("Stage");
-		if(obj == null)
-		{
-			return false;
-		}
-		var stageObj = obj.GetComponent<Stage.StageObject>();
-
-		if(stageObj != null)
-		{
-			var chip = stageObj.stage.getChip((int)((x + 0.5f*hdir) / 0.5f), (int)((y + 0.5f*vdir) / 0.5f));
-
-			if(chip == 1)
-			{
-				return true;
-			}
-		}
-		return false;
-#else
 		backVector = Vector2.zero;
 
 		var obj = GameObject.Find("Stage");
@@ -210,7 +193,6 @@ public class Player : CharacterBase {
 		{
 			for(var x = x0; x < x1; x++)
 			{
-				//var chip = stageObj.stage.getChip((int)((x + 0.5f * hdir) / 0.5f), (int)((y + 0.5f * vdir) / 0.5f));
 				var chip = stageObj.stage.getChip(x, y);
 
 				if(chip == 1)
@@ -231,7 +213,24 @@ public class Player : CharacterBase {
 		}
 
 		return false;
-#endif
+	}
+
+
+	bool isLift(Vector2 pos)
+	{
+		var obj = GameObject.Find("Lift");
+		if(obj == null)
+		{
+			return false;
+		}
+
+		var lift = obj.GetComponent<Lift>();
+		if(!lift.isOn(position))
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	void drawRectLine(float x, float y)
