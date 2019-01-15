@@ -13,7 +13,7 @@ public class Lift : CharacterBase
 	void Start()
 	{
 		var ctrl = Character.ControlObject.getControl();
-		ctrl.addObject(this);
+		ctrl.addObject(this, 0);	//	プレイヤーよりも先に処理するためレイヤー0を指定
 
 		var obj = Resources.Load<GameObject>("Lift");
 		chobj = GameObject.Instantiate<GameObject>(obj);
@@ -23,10 +23,20 @@ public class Lift : CharacterBase
 
 	}
 
-
+	Player player;
 	int direction = 1;
 	public override void update()
 	{
+		var obj = GameObject.Find("Player");
+		if(obj != null)
+		{
+			player = obj.GetComponent<Player>();
+		}
+		else
+		{
+			player = null;
+		}
+
 		var pos = position;
 		if(direction == 1 && pos.y >= 192)
 		{
@@ -37,7 +47,15 @@ public class Lift : CharacterBase
 			direction = 1;
 		}
 
-		pos.y += 1 * direction;
+		var move = new Vector2(0, 1 * direction);
+		pos += move;
+
+		Vector2 backVector = Vector2.zero;
+		if(player!=null && isOn(pos, ref backVector))
+		{
+			//	押し戻し＋追従
+			player.move(backVector + move);
+		}
 
 		position = pos;
 	}
@@ -47,19 +65,29 @@ public class Lift : CharacterBase
 		transform.position = position;
 	}
 
-	public bool isOn(Vector2 pos)
+	private bool isOn(Vector2 pos, ref Vector2 backVector)
 	{
-		var lx = position.x - size.x/2;
-		var rx = position.x + size.x / 2;
-		if(pos.x<lx || rx < pos.x)
+		backVector = Vector2.zero;
+
+		var playerSize = player.getSize();
+		var playerPos = player.position;
+
+		var lx = pos.x - size.x/2;
+		var rx = pos.x + size.x / 2;
+		if(playerPos.x<lx || playerPos.x>rx )
 		{
 			return false;
 		}
 
-		if(pos.y - position.y != 12)
+		float diff = playerPos.y - pos.y;
+		float halfLen = (playerSize.y + size.y)/2;
+		if(diff < size.y/2 || diff > halfLen)
 		{
 			return false;
 		}
+
+		//	めり込んだ分を押し戻す
+		backVector.y = halfLen - diff;
 
 		return true;
 	}

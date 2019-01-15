@@ -66,24 +66,29 @@ public class Player : CharacterBase {
 
 		if(h >= 0.2f)
 		{
-			move = 2;
+			move = 2*rate;
 			dir = 1;
 		}
 		else if(h <= -0.2f)
 		{
-			move = -2;
+			move = -2*rate;
 			dir = -1;
 		}
 
+		move += moveDirection.x;
+		pos.y += moveDirection.y;
+		moveDirection = Vector2.zero;   //	外部要因を反映済みなのでクリア
+		isMoved = false;
+
 		if(dir!=0)
 		{
-			if(!isWall(pos, new Vector2(move * rate, 0), ref backVector))
+			if(!isWall(pos, new Vector2(move, 0), ref backVector))
 			{
-				pos.x += move * rate;
+				pos.x += move;
 			}
 			else
 			{
-				pos.x += move * rate + backVector.x;
+				pos.x += move + backVector.x;
 			}
 		}
 
@@ -126,6 +131,19 @@ public class Player : CharacterBase {
 
 	}
 
+	public Vector2 getSize()
+	{
+		return new Vector2(16,16);
+	}
+
+	bool isMoved;
+	Vector2 moveDirection;
+	public void move(Vector2 dir)
+	{
+		isMoved = true;
+		moveDirection = dir;
+	}
+
 	//	天井判定
 	bool isCeiling(Vector2 pos, Vector2 offset, ref Vector2 backVector)
 	{
@@ -135,6 +153,11 @@ public class Player : CharacterBase {
 	//	地面判定
 	bool isGround(Vector2 pos, Vector2 offset, ref Vector2 backVector)
 	{
+		//	外部の要因で移動した場合、地面はあるものとする
+		if(isMoved)
+		{
+			return true;
+		}
 		return isWall(pos, offset, ref backVector);
 	}
 
@@ -215,23 +238,6 @@ public class Player : CharacterBase {
 		return false;
 	}
 
-
-	bool isLift(Vector2 pos)
-	{
-		var obj = GameObject.Find("Lift");
-		if(obj == null)
-		{
-			return false;
-		}
-
-		var lift = obj.GetComponent<Lift>();
-		if(!lift.isOn(position))
-		{
-			return false;
-		}
-
-		return true;
-	}
 
 	void drawRectLine(float x, float y)
 	{

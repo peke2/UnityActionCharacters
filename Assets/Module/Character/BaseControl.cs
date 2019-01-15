@@ -7,19 +7,27 @@ namespace Character
 {
 	public class BaseControl
 	{
-		List<ICore> characterList;
+		const int LIST_LAYER_MAX = 4;
+		List<ICore>[] characterList;
 
 		public BaseControl()
 		{
-			characterList = new List<ICore>();
+			characterList = new List<ICore>[LIST_LAYER_MAX];
+			for(var i = 0; i < LIST_LAYER_MAX; i++)
+			{
+				characterList[i] = new List<ICore>();
+			}
 		}
 
 
 		public void update()
 		{
-			foreach(var obj in characterList)
+			foreach(var list in characterList)
 			{
-				obj.update();
+				foreach(var obj in list)
+				{
+					obj.update();
+				}
 			}
 
 			collide();
@@ -29,9 +37,12 @@ namespace Character
 
 		void updateGraph()
 		{
-			foreach(var obj in characterList)
+			foreach(var list in characterList)
 			{
-				obj.updateGraph();
+				foreach(var obj in list)
+				{
+					obj.updateGraph();
+				}
 			}
 		}
 
@@ -39,53 +50,72 @@ namespace Character
 		void remove()
 		{
 			//	対象をリストから除去
-			characterList.RemoveAll( o=> {
-				if(!o.isRemoved) return false;
-				o.onRemoved();
-				return true;
-			});
+			foreach(var list in characterList)
+			{
+				list.RemoveAll(o => {
+					if(!o.isRemoved)
+						return false;
+					o.onRemoved();
+					return true;
+				});
+			}
 		}
 
 
-		public void addObject(ICore cobj)
+		public void addObject(ICore cobj, int layer=1)
 		{
-			if(characterList.Exists(o=>o == cobj))
+			if(layer < 0 || layer >= LIST_LAYER_MAX)
 			{
 				return;
 			}
-			characterList.Add(cobj);
+
+			var list = characterList[layer];
+			if(list.Exists(o=>o == cobj))
+			{
+				return;
+			}
+			list.Add(cobj);
 			cobj.init();
 		}
 
 
 		public void collide()
 		{
-			var list = new List<Tuple<ICore, ICore>>();
+			var hitList = new List<Tuple<ICore, ICore>>();
 
-			var nums = characterList.Count;
-			for(var i=0; i<nums-1; i++)
+			foreach(var list in characterList)
 			{
-				var obj = characterList[i];
-				var objHit = obj.hit;
-
-				if(objHit == null) continue;
-				for(var j=i+1; j<nums; j++)
+				//	判定は同じレイヤー同士でのみ行う
+				var nums = hitList.Count;
+				for(var i = 0; i < nums - 1; i++)
 				{
-					var target = characterList[j];
-					var targetHit = target.hit;
+					var obj = list[i];
+					var objHit = obj.hit;
 
-					if(targetHit == null) continue;
-
-					if(objHit.collides(obj.position, target.position, targetHit))
+					if(objHit == null)
 					{
-						list.Add( new Tuple<ICore, ICore>(obj, target));
+						continue;
+					}
+
+					for(var j = i + 1; j < nums; j++)
+					{
+						var target = list[j];
+						var targetHit = target.hit;
+
+						if(targetHit == null)
+							continue;
+
+						if(objHit.collides(obj.position, target.position, targetHit))
+						{
+							hitList.Add(new Tuple<ICore, ICore>(obj, target));
+						}
 					}
 				}
 			}
 
 			//	対象に対してイベントを投げる
 			//	判定中に随時処理を行わず、すべての判定が終了したらまとめて対応
-			foreach(var t in list)
+			foreach(var t in hitList)
 			{
 				//	お互いにイベントを送る
 				(t.Item1).onHit(t.Item2);
