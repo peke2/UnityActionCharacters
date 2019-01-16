@@ -156,6 +156,8 @@ public class Player : CharacterBase {
 		//	外部の要因で移動した場合、地面はあるものとする
 		if(isMoved)
 		{
+			//	既に押し戻しがあったものとして打ち消す
+			backVector -= offset;
 			return true;
 		}
 		return isWall(pos, offset, ref backVector);

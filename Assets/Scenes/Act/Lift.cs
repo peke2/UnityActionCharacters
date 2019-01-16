@@ -9,17 +9,24 @@ public class Lift : CharacterBase
 
 	Vector2 size = new Vector2(48, 8);
 
+	public float speed = 1;
+
 	// Use this for initialization
 	void Start()
 	{
 		var ctrl = Character.ControlObject.getControl();
 		ctrl.addObject(this, 0);	//	プレイヤーよりも先に処理するためレイヤー0を指定
 
+			//[todo] 処理の順番の正常化を検討する
+			//リフトからプレイヤーを操作するためレイヤーで処理優先を上げているが、
+			//プレイヤーの落下処理の後、次のフレームでリフトからの押上げ処理が入るため一瞬めり込む
+			//プレイヤー側でも「地面」として処理する必要があるのではないか？
+
 		var obj = Resources.Load<GameObject>("Lift");
 		chobj = GameObject.Instantiate<GameObject>(obj);
 		chobj.name = "LiftObject";
 		chobj.transform.SetParent(gameObject.transform, false);
-		position = new Vector2(43 * 8, 1 * 8);
+		//position = new Vector2(43 * 8, 1 * 8);
 
 	}
 
@@ -38,7 +45,7 @@ public class Lift : CharacterBase
 		}
 
 		var pos = position;
-		if(direction == 1 && pos.y >= 192)
+		if(direction == 1 && pos.y >= 160)
 		{
 			direction = -1;
 		}
@@ -47,8 +54,7 @@ public class Lift : CharacterBase
 			direction = 1;
 		}
 
-		var move = new Vector2(0, 1 * direction);
-		pos += move;
+		var move = new Vector2(0, speed * direction);
 
 		Vector2 backVector = Vector2.zero;
 		if(player!=null && isOn(pos, ref backVector))
@@ -56,6 +62,8 @@ public class Lift : CharacterBase
 			//	押し戻し＋追従
 			player.move(backVector + move);
 		}
+
+		pos += move;
 
 		position = pos;
 	}

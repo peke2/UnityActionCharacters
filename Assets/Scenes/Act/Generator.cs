@@ -11,9 +11,18 @@ public class Generator : MonoBehaviour {
 		obj.AddComponent<Player>();
 		obj.transform.SetParent(gameObject.transform,false);
 
+		Lift liftObj;
 		obj = new GameObject("Lift");
-		obj.AddComponent<Lift>();
+		liftObj = obj.AddComponent<Lift>();
 		obj.transform.SetParent(gameObject.transform, false);
+		liftObj.position = new Vector2(41 * 8, 1 * 8);
+
+		obj = new GameObject("Lift2");
+		liftObj = obj.AddComponent<Lift>();
+		obj.transform.SetParent(gameObject.transform, false);
+		liftObj.position = new Vector2(48 * 8, 1 * 8);
+		liftObj.speed = 1.5f;
+
 
 		//Enemy enemy;
 		//for(int i = 0; i < 10; i++)
