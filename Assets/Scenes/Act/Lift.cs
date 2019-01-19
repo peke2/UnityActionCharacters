@@ -9,7 +9,10 @@ public class Lift : CharacterBase
 
 	Vector2 size = new Vector2(48, 8);
 
-	public float speed = 1;
+	public float speed = 1/152.0f;
+	public Vector2 moveDirection = new Vector2(0,1);
+	public Vector2 startPos = new Vector2(0,8);
+	public Vector2 endPos = new Vector2(0,160);
 
 	// Use this for initialization
 	void Start()
@@ -32,6 +35,7 @@ public class Lift : CharacterBase
 
 	Player player;
 	int direction = 1;
+	float parameter = 0;
 	public override void update()
 	{
 		var obj = GameObject.Find("Player");
@@ -44,26 +48,30 @@ public class Lift : CharacterBase
 			player = null;
 		}
 
-		var pos = position;
-		if(direction == 1 && pos.y >= 160)
+		parameter += speed * direction;
+
+		if(parameter > 1.0f)
 		{
 			direction = -1;
+			parameter = 1.0f;
 		}
-		else if(direction == -1 && pos.y <= 8)
+		else if( parameter < 0.0f )
 		{
 			direction = 1;
+			parameter = 0.0f;
 		}
 
-		var move = new Vector2(0, speed * direction);
+		var pos = (endPos - startPos) * parameter + startPos;
+		var move = pos - position;
 
 		Vector2 backVector = Vector2.zero;
-		if(player!=null && isOn(pos, ref backVector))
+		if(player!=null && isOn(position, player.getSize(), player.position, ref backVector))
 		{
 			//	押し戻し＋追従
 			player.move(backVector + move);
 		}
 
-		pos += move;
+		//pos += move;
 
 		position = pos;
 	}
@@ -73,12 +81,18 @@ public class Lift : CharacterBase
 		transform.position = position;
 	}
 
-	private bool isOn(Vector2 pos, ref Vector2 backVector)
+
+	public bool isOn(Vector2 playerSize, Vector2 playerPos, ref Vector2 backVector)
+	{
+		return isOn(position, playerSize, playerPos, ref backVector);
+	}
+
+	private bool isOn(Vector2 pos, Vector2 playerSize, Vector2 playerPos, ref Vector2 backVector)
 	{
 		backVector = Vector2.zero;
 
-		var playerSize = player.getSize();
-		var playerPos = player.position;
+		//var playerSize = player.getSize();
+		//var playerPos = player.position;
 
 		var lx = pos.x - size.x/2;
 		var rx = pos.x + size.x / 2;

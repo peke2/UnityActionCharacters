@@ -41,7 +41,9 @@ public class Player : CharacterBase {
 		float fallMove = -4;
 		Vector2 backVector = Vector2.zero;
 
-		if(!isGround(position, new Vector2(0, fallMove), ref backVector))
+		//	ジャンプ中は足元の地面判定はスルー
+		//	ジャンプ中にめり込み判定に引っかかって引き戻されるため
+		if(jump > 0 || !isGround(position, new Vector2(0, fallMove), ref backVector))
 		{
 			if(jump == 0)
 			{
@@ -76,7 +78,7 @@ public class Player : CharacterBase {
 		}
 
 		move += moveDirection.x;
-		pos.y += moveDirection.y;
+		pos += moveDirection;
 		moveDirection = Vector2.zero;   //	外部要因を反映済みなのでクリア
 		isMoved = false;
 
@@ -160,6 +162,18 @@ public class Player : CharacterBase {
 			backVector -= offset;
 			return true;
 		}
+
+		var objects = GameObject.FindObjectsOfType<Lift>();
+		foreach(var obj in objects)
+		{
+			Vector2 backVec = Vector2.zero;
+			if(obj.isOn(getSize(), position+offset, ref backVec))
+			{
+				backVector = backVec;
+				return true;
+			}
+		}
+
 		return isWall(pos, offset, ref backVector);
 	}
 
