@@ -8,21 +8,21 @@ namespace Character
 	public class BaseControl
 	{
 		const int LIST_LAYER_MAX = 4;
-		List<ICore>[] characterList;
+		List<ICore>[] m_characterList;
 
 		public BaseControl()
 		{
-			characterList = new List<ICore>[LIST_LAYER_MAX];
+			m_characterList = new List<ICore>[LIST_LAYER_MAX];
 			for(var i = 0; i < LIST_LAYER_MAX; i++)
 			{
-				characterList[i] = new List<ICore>();
+				m_characterList[i] = new List<ICore>();
 			}
 		}
 
 
 		public void update()
 		{
-			foreach(var list in characterList)
+			foreach(var list in m_characterList)
 			{
 				foreach(var obj in list)
 				{
@@ -37,7 +37,7 @@ namespace Character
 
 		void updateGraph()
 		{
-			foreach(var list in characterList)
+			foreach(var list in m_characterList)
 			{
 				foreach(var obj in list)
 				{
@@ -50,7 +50,7 @@ namespace Character
 		void remove()
 		{
 			//	対象をリストから除去
-			foreach(var list in characterList)
+			foreach(var list in m_characterList)
 			{
 				list.RemoveAll(o => {
 					if(!o.isRemoved)
@@ -69,7 +69,7 @@ namespace Character
 				return;
 			}
 
-			var list = characterList[layer];
+			var list = m_characterList[layer];
 			if(list.Exists(o=>o == cobj))
 			{
 				return;
@@ -83,7 +83,7 @@ namespace Character
 		{
 			var hitList = new List<Tuple<ICore, ICore>>();
 
-			foreach(var list in characterList)
+			foreach(var list in m_characterList)
 			{
 				//	判定は同じレイヤー同士でのみ行う
 				var nums = hitList.Count;

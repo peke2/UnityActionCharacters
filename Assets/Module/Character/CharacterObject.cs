@@ -6,7 +6,7 @@ namespace Character
 {
 	public class CharacterObject : MonoBehaviour, ICore
 	{
-		protected GameObject view;
+		protected GameObject m_view;
 		public Hit hit {get; set;}
 		public Vector2 position {get; set;}
 

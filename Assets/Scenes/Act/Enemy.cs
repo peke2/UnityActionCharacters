@@ -5,7 +5,7 @@ using UnityEngine;
 public class Enemy : CharacterBase
 {
 
-	GameObject chobj;
+	GameObject m_chobj;
 
 	// Use this for initialization
 	void Start()
@@ -14,9 +14,9 @@ public class Enemy : CharacterBase
 		ctrl.addObject(this);
 
 		var obj = Resources.Load<GameObject>("Enemy");
-		chobj = GameObject.Instantiate<GameObject>(obj);
-		chobj.name = "EnemyObject";
-		chobj.transform.SetParent(gameObject.transform,false);
+		m_chobj = GameObject.Instantiate<GameObject>(obj);
+		m_chobj.name = "EnemyObject";
+		m_chobj.transform.SetParent(gameObject.transform,false);
 
 		hit = new Character.Hit();
 		hit.setSize(new Vector2(1f,1f));
@@ -33,7 +33,7 @@ public class Enemy : CharacterBase
 
 	public override void updateGraph()
 	{
-		chobj.transform.position = position;
+		m_chobj.transform.position = position;
 
 		var lt = position + hit.getOffset();
 		var rb = lt + hit.getSize() * new Vector2(1,-1);

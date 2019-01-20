@@ -5,9 +5,9 @@ using UnityEngine.Tilemaps;
 
 public class Player : CharacterBase {
 
-	GameObject chobj;
+	GameObject m_chobj;
 
-	System.Action stateProc;
+	System.Action m_stateProc;
 
 	const float JUMP_PITCH = 4;
 	const int JUMP_COUNT = 8;
@@ -18,9 +18,9 @@ public class Player : CharacterBase {
 		ctrl.addObject(this);
 
 		var obj = Resources.Load<GameObject>("Player");
-		chobj = GameObject.Instantiate<GameObject>(obj);
-		chobj.name = "PlayerObject";
-		chobj.transform.SetParent(gameObject.transform, false);
+		m_chobj = GameObject.Instantiate<GameObject>(obj);
+		m_chobj.name = "PlayerObject";
+		m_chobj.transform.SetParent(gameObject.transform, false);
 		position = new Vector2(24,128);
 
 		hit = new Character.Hit();
@@ -31,8 +31,8 @@ public class Player : CharacterBase {
 	}
 
 
-	int jumpCount = 0;
-	float jump = 0;
+	int m_jumpCount = 0;
+	float m_jump = 0;
 	public override void update()
 	{
 		var pos = position;
@@ -43,9 +43,9 @@ public class Player : CharacterBase {
 
 		//	ジャンプ中は足元の地面判定はスルー
 		//	ジャンプ中にめり込み判定に引っかかって引き戻されるため
-		if(jump > 0 || !isGround(position, new Vector2(0, fallMove), ref backVector))
+		if(m_jump > 0 || !isGround(position, new Vector2(0, fallMove), ref backVector))
 		{
-			if(jump == 0)
+			if(m_jump == 0)
 			{
 				pos.y += fallMove;
 			}
@@ -55,10 +55,10 @@ public class Player : CharacterBase {
 		{
 			pos.y += fallMove + backVector.y;
 
-			if(Input.GetButtonDown("Jump") && jump == 0)
+			if(Input.GetButtonDown("Jump") && m_jump == 0)
 			{
-				jump = JUMP_PITCH;
-				jumpCount = JUMP_COUNT;
+				m_jump = JUMP_PITCH;
+				m_jumpCount = JUMP_COUNT;
 			}
 		}
 
@@ -95,29 +95,29 @@ public class Player : CharacterBase {
 		}
 
 
-		if(jumpCount > 0)
+		if(m_jumpCount > 0)
 		{
-			jumpCount--;
+			m_jumpCount--;
 		}
 		else
 		{
-			jump = jump / 2;
-			if(jump < 0.1f)
+			m_jump = m_jump / 2;
+			if(m_jump < 0.1f)
 			{
-				jump = 0;
+				m_jump = 0;
 			}
 		}
 
 		backVector = Vector2.zero;
-		if(isCeiling(pos, new Vector2(0, jump), ref backVector))
+		if(isCeiling(pos, new Vector2(0, m_jump), ref backVector))
 		{
-			pos.y += jump + backVector.y;
-			jump = 0;
-			jumpCount = 0;
+			pos.y += m_jump + backVector.y;
+			m_jump = 0;
+			m_jumpCount = 0;
 		}
 		else
 		{
-			pos.y += jump;
+			pos.y += m_jump;
 		}
 
 		position = pos;
@@ -125,7 +125,7 @@ public class Player : CharacterBase {
 
 	public override void updateGraph()
 	{
-		chobj.transform.position = position;
+		m_chobj.transform.position = position;
 	}
 
 	public override void onHit(Character.ICore target)

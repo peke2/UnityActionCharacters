@@ -6,18 +6,18 @@ namespace Character
 {
 	public class ControlObject : MonoBehaviour
 	{
-		BaseControl baseControl;
-		static ControlObject self;
+		BaseControl m_baseControl;
+		static ControlObject m_self;
 
 		public static BaseControl getControl()
 		{
-			return self.baseControl;
+			return m_self.m_baseControl;
 		}
 
 		private void Awake()
 		{
-			baseControl = new BaseControl();
-			self = this;
+			m_baseControl = new BaseControl();
+			m_self = this;
 		}
 
 		// Use this for initialization
@@ -28,7 +28,7 @@ namespace Character
 		// Update is called once per frame
 		void Update()
 		{
-			baseControl.update();
+			m_baseControl.update();
 		}
 	}
 }

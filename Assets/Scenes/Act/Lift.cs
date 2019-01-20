@@ -5,14 +5,14 @@ using UnityEngine;
 public class Lift : CharacterBase
 {
 
-	GameObject chobj;
+	GameObject m_chobj;
 
 	Vector2 size = new Vector2(48, 8);
 
-	public float speed = 1/152.0f;
-	public Vector2 moveDirection = new Vector2(0,1);
-	public Vector2 startPos = new Vector2(0,8);
-	public Vector2 endPos = new Vector2(0,160);
+	public float m_speed = 1/152.0f;
+	public Vector2 m_moveDirection = new Vector2(0,1);
+	public Vector2 m_startPos = new Vector2(0,8);
+	public Vector2 m_endPos = new Vector2(0,160);
 
 	// Use this for initialization
 	void Start()
@@ -26,9 +26,9 @@ public class Lift : CharacterBase
 			//プレイヤー側でも「地面」として処理する必要があるのではないか？
 
 		var obj = Resources.Load<GameObject>("Lift");
-		chobj = GameObject.Instantiate<GameObject>(obj);
-		chobj.name = "LiftObject";
-		chobj.transform.SetParent(gameObject.transform, false);
+		m_chobj = GameObject.Instantiate<GameObject>(obj);
+		m_chobj.name = "LiftObject";
+		m_chobj.transform.SetParent(gameObject.transform, false);
 		//position = new Vector2(43 * 8, 1 * 8);
 
 	}
@@ -48,7 +48,7 @@ public class Lift : CharacterBase
 			player = null;
 		}
 
-		parameter += speed * direction;
+		parameter += m_speed * direction;
 
 		if(parameter > 1.0f)
 		{
@@ -61,7 +61,7 @@ public class Lift : CharacterBase
 			parameter = 0.0f;
 		}
 
-		var pos = (endPos - startPos) * parameter + startPos;
+		var pos = (m_endPos - m_startPos) * parameter + m_startPos;
 		var move = pos - position;
 
 		Vector2 backVector = Vector2.zero;
