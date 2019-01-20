@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterBase : Character.CharacterObject {
+public class CharacterObjectBase : Character.CharacterObject {
 	public enum Type
 	{
 		Player,

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Player : CharacterBase {
+public class Player : CharacterObjectBase {
 
 	GameObject m_chobj;
 
@@ -27,7 +27,7 @@ public class Player : CharacterBase {
 		hit.setSize(new Vector2(16,16));
 		hit.setOffset(new Vector2(-8,8));
 
-		type = CharacterBase.Type.Player;
+		type = CharacterObjectBase.Type.Player;
 	}
 
 
@@ -200,7 +200,7 @@ public class Player : CharacterBase {
 			return false;
 		}
 
-		var stageObj = obj.GetComponent<Stage.StageObject>();
+		var stageObj = obj.GetComponent<Stage.TilemapStageObject>();
 
 		if(stageObj == null)
 		{
@@ -232,7 +232,7 @@ public class Player : CharacterBase {
 		{
 			for(var x = x0; x < x1; x++)
 			{
-				var chip = stageObj.stage.getChip(x, y);
+				var chip = stageObj.getChip(x, y);
 
 				if(chip == 1)
 				{

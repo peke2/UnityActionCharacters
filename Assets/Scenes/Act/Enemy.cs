@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy : CharacterBase
+public class Enemy : CharacterObjectBase
 {
 
 	GameObject m_chobj;
@@ -22,7 +22,7 @@ public class Enemy : CharacterBase
 		hit.setSize(new Vector2(1f,1f));
 		hit.setOffset(new Vector2(-0.5f,0.5f));
 
-		type = CharacterBase.Type.Enemy;
+		type = CharacterObjectBase.Type.Enemy;
 
 	}
 
@@ -52,8 +52,8 @@ public class Enemy : CharacterBase
 
 	public override void onHit(Character.ICore target)
 	{
-		CharacterBase cbase = (CharacterBase)target;
-		if(cbase.type == CharacterBase.Type.Player)
+		CharacterObjectBase cbase = (CharacterObjectBase)target;
+		if(cbase.type == CharacterObjectBase.Type.Player)
 		{
 			//Debug.Log(cbase.type);
 			isRemoved = true;

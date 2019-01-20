@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Lift : CharacterBase
+public class Lift : CharacterObjectBase
 {
 
 	GameObject m_chobj;
