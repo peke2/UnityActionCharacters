@@ -147,6 +147,9 @@ public class Player : CharacterObjectBase {
 			else if(m_stateProc == stateProcJump)
 			{
 				m_animator.SetInteger("State", (int)ANIM_STATE.JUMP);
+				//とりあえず、拾ったSEを入れてみた
+				var audio = m_chobj.GetComponent<AudioSource>();
+				audio.PlayOneShot(audio.clip);
 			}
 			else if(m_stateProc == stateProcFall)
 			{
