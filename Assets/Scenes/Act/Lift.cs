@@ -7,7 +7,7 @@ public class Lift : CharacterObjectBase
 
 	GameObject m_chobj;
 
-	Vector2 size = new Vector2(48, 8);
+	Vector2 m_size = new Vector2(48, 8);
 
 	public float m_speed = 1/152.0f;
 	public Vector2 m_moveDirection = new Vector2(0,1);
@@ -62,10 +62,10 @@ public class Lift : CharacterObjectBase
 		}
 
 		var pos = (m_endPos - m_startPos) * parameter + m_startPos;
-		var move = pos - position;
+		var move = pos - m_position;
 
 		Vector2 backVector = Vector2.zero;
-		if(player!=null && isOn(position, player.getSize(), player.position, ref backVector))
+		if(player!=null && isOn(m_position, player.getSize(), player.m_position, ref backVector))
 		{
 			//	押し戻し＋追従
 			player.move(backVector + move);
@@ -73,18 +73,18 @@ public class Lift : CharacterObjectBase
 
 		//pos += move;
 
-		position = pos;
+		m_position = pos;
 	}
 
 	public override void updateGraph()
 	{
-		transform.position = position;
+		transform.position = m_position;
 	}
 
 
 	public bool isOn(Vector2 playerSize, Vector2 playerPos, ref Vector2 backVector)
 	{
-		return isOn(position, playerSize, playerPos, ref backVector);
+		return isOn(m_position, playerSize, playerPos, ref backVector);
 	}
 
 	private bool isOn(Vector2 pos, Vector2 playerSize, Vector2 playerPos, ref Vector2 backVector)
@@ -94,16 +94,17 @@ public class Lift : CharacterObjectBase
 		//var playerSize = player.getSize();
 		//var playerPos = player.position;
 
-		var lx = pos.x - size.x/2;
-		var rx = pos.x + size.x / 2;
+		var lx = pos.x - m_size.x/2;
+		var rx = pos.x + m_size.x / 2;
 		if(playerPos.x<lx || playerPos.x>rx )
 		{
 			return false;
 		}
 
 		float diff = playerPos.y - pos.y;
-		float halfLen = (playerSize.y + size.y)/2;
-		if(diff < size.y/2 || diff > halfLen)
+		float halfLen = (playerSize.y + m_size.y)/2;
+		//	突き抜けすぎ、浮きすぎなら「乗っていない」と判定
+		if(diff < m_size.y/2 || diff > halfLen+0.5f)	//	「+0.5f」は誤差の吸収分→乗っているけど、完全に密着していない可能性の対応
 		{
 			return false;
 		}

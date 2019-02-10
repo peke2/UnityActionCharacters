@@ -90,7 +90,7 @@ namespace Character
 				for(var i = 0; i < nums - 1; i++)
 				{
 					var obj = list[i];
-					var objHit = obj.hit;
+					var objHit = obj.m_hit;
 
 					if(objHit == null)
 					{
@@ -100,12 +100,12 @@ namespace Character
 					for(var j = i + 1; j < nums; j++)
 					{
 						var target = list[j];
-						var targetHit = target.hit;
+						var targetHit = target.m_hit;
 
 						if(targetHit == null)
 							continue;
 
-						if(objHit.collides(obj.position, target.position, targetHit))
+						if(objHit.collides(obj.m_position, target.m_position, targetHit))
 						{
 							hitList.Add(new Tuple<ICore, ICore>(obj, target));
 						}

@@ -7,8 +7,8 @@ namespace Character
 	public class CharacterObject : MonoBehaviour, ICore
 	{
 		protected GameObject m_view;
-		public Hit hit {get; set;}
-		public Vector2 position {get; set;}
+		public Hit m_hit {get; set;}
+		public Vector2 m_position {get; set;}
 
 		public bool isRemoved {get; set;}
 

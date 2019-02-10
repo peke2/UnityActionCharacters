@@ -18,14 +18,14 @@ public class Generator : MonoBehaviour {
 		liftObj.m_startPos = new Vector2(30 * 8, 10 * 8);
 		liftObj.m_endPos = new Vector2(41 * 8, 18 * 8);
 		//liftObj.endPos = new Vector2(30 * 8, 10 * 8);
-		liftObj.position = liftObj.m_startPos;
+		liftObj.m_position = liftObj.m_startPos;
 
 		obj = new GameObject("Lift2");
 		liftObj = obj.AddComponent<Lift>();
 		obj.transform.SetParent(gameObject.transform, false);
 		liftObj.m_startPos = new Vector2(48 * 8, 1 * 8);
 		liftObj.m_endPos = new Vector2(48 * 8, 20 * 8);
-		liftObj.position = liftObj.m_startPos;
+		liftObj.m_position = liftObj.m_startPos;
 		liftObj.m_speed = 1 / 152.0f * 1.5f;
 
 

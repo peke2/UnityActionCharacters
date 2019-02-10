@@ -18,9 +18,9 @@ public class Enemy : CharacterObjectBase
 		m_chobj.name = "EnemyObject";
 		m_chobj.transform.SetParent(gameObject.transform,false);
 
-		hit = new Character.Hit();
-		hit.setSize(new Vector2(1f,1f));
-		hit.setOffset(new Vector2(-0.5f,0.5f));
+		m_hit = new Character.Hit();
+		m_hit.setSize(new Vector2(1f,1f));
+		m_hit.setOffset(new Vector2(-0.5f,0.5f));
 
 		type = CharacterObjectBase.Type.Enemy;
 
@@ -33,10 +33,10 @@ public class Enemy : CharacterObjectBase
 
 	public override void updateGraph()
 	{
-		m_chobj.transform.position = position;
+		m_chobj.transform.position = m_position;
 
-		var lt = position + hit.getOffset();
-		var rb = lt + hit.getSize() * new Vector2(1,-1);
+		var lt = m_position + m_hit.getOffset();
+		var rb = lt + m_hit.getSize() * new Vector2(1,-1);
 		Vector3[] vec = new Vector3[]{
 			new Vector3(lt.x, lt.y, 0),
 			new Vector3(rb.x, lt.y, 0),

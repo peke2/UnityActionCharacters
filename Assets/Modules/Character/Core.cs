@@ -6,8 +6,8 @@ namespace Character
 {
 	public interface ICore
 	{
-		Hit hit { get; set; }
-		Vector2 position { get; set; }
+		Hit m_hit { get; set; }
+		Vector2 m_position { get; set; }
 
 		bool isRemoved {get; set;}
 
