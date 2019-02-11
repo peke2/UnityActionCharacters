@@ -6,12 +6,16 @@ using UnityEngine.Tilemaps;
 public class Player : CharacterObjectBase {
 
 	GameObject m_chobj;
+	GameObject m_stageObj;
 
 	delegate void StateProc(ref Vector2 pos);
 	StateProc m_stateProc;
 
 	Animator m_animator;
 	SpriteRenderer m_animSprite;
+
+	int m_jumpCount = 0;
+	float m_jump = 0;
 
 	const float JUMP_PITCH = 4;
 	const int JUMP_COUNT = 8;
@@ -43,14 +47,13 @@ public class Player : CharacterObjectBase {
 		m_animator = m_chobj.GetComponent<Animator>();
 		m_animSprite = m_chobj.GetComponent<SpriteRenderer>();
 
-		//[todo](2019.01.30) 以下の問題点の対応をする
-		//スティック入力が無い(右に入れてない)と向きが戻る
-		//正しく状態が遷移しない
-		//アニメーションがちらつく時がある
-		//状態の処理が複雑に絡み始めているので整理する
-			//アニメーションの遷移も楽に記述できるようになるかも？
-
 		type = CharacterObjectBase.Type.Player;
+
+		m_stageObj = GameObject.Find("Stage");
+		if(m_stageObj == null)
+		{
+			Debug.Log("ステージオブジェクトが無い");
+		}
 	}
 
 
@@ -245,9 +248,8 @@ public class Player : CharacterObjectBase {
 		moveHorizontal(ref pos, 1);
 	}
 
-
-	int m_jumpCount = 0;
-	float m_jump = 0;
+//	参考までに、ステート制御以前の元の処理を残しておく
+#if false
 	private void updateProc()
 	{
 		var pos = m_position;
@@ -358,7 +360,7 @@ public class Player : CharacterObjectBase {
 
 		m_position = pos;
 	}
-
+#endif
 
 	public override void updateGraph()
 	{
@@ -414,28 +416,12 @@ public class Player : CharacterObjectBase {
 		return isWall(pos, offset, ref backVector);
 	}
 
-	/*
-	Vector2 calcSnapVectorFloor(float x, float y, float snapx, float snapy)
-	{
-		var vec = new Vector2(Mathf.Floor(x/snapx)*snapx, Mathf.Floor(y/snapy)*snapy);
-		return vec;
-	}
-
-	Vector2 calcSnapVectorCeil(float x, float y, float snapx, float snapy)
-	{
-		var vec = new Vector2(Mathf.Ceil(x / snapx) * snapx, Mathf.Ceil(y / snapy) * snapy);
-		return vec;
-	}*/
 
 	bool isWall(Vector2 pos, Vector2 offset, ref Vector2 backVector)
 	{
 		backVector = Vector2.zero;
 
-		var obj = GameObject.Find("Stage");
-		if(obj == null)
-		{
-			return false;
-		}
+		var obj = m_stageObj;
 
 		var stageObj = obj.GetComponent<Stage.TilemapStageObject>();
 
