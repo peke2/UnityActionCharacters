@@ -21,7 +21,7 @@ public class Fly : MonoBehaviour {
 	void Update () {
 		m_actParam.m_velocity = Vector3.zero;
 		//	燃料の回復
-		m_actParam.m_fuel += 2;
+		m_actParam.m_fuel += 4;
 		if (m_actParam.m_fuel > 1000)
 		{
 			m_actParam.m_fuel = 1000;
